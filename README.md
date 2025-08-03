@@ -5,6 +5,7 @@ A learning project to explore Java and Spring Boot fundamentals through building
 ## Learning Objectives
 
 This project demonstrates key concepts in Java/Spring Boot development:
+
 - 3-layer architecture (Controller, Service, Repository)
 - RESTful API design and implementation
 - JPA/Hibernate for database operations
@@ -26,17 +27,20 @@ This project demonstrates key concepts in Java/Spring Boot development:
 ## Quick Setup
 
 1. **Clone and navigate to project**
+
    ```bash
    git clone <repository-url>
    cd task-manager
    ```
 
 2. **Start PostgreSQL database**
+
    ```bash
    docker-compose up -d
    ```
 
 3. **Run the application**
+
    ```bash
    ./mvnw spring-boot:run
    ```
@@ -56,6 +60,7 @@ This project demonstrates key concepts in Java/Spring Boot development:
 ## Example Usage
 
 **Create a task:**
+
 ```bash
 curl -X POST http://localhost:8080/api/tasks \
   -H "Content-Type: application/json" \
@@ -63,13 +68,14 @@ curl -X POST http://localhost:8080/api/tasks \
 ```
 
 **Get all tasks:**
+
 ```bash
 curl http://localhost:8080/api/tasks
 ```
 
 ## Project Structure
 
-```
+```txt
 src/main/java/io/github/gabrielfagundeznievas/taskmanager/
 ├── controller/     # REST endpoints
 ├── service/        # Business logic
@@ -81,6 +87,7 @@ src/main/java/io/github/gabrielfagundeznievas/taskmanager/
 ## Testing
 
 Run unit tests:
+
 ```bash
 ./mvnw test
 ```
