@@ -1,7 +1,9 @@
 package io.github.gabrielfagundeznievas.taskmanager.service;
 
+import io.github.gabrielfagundeznievas.taskmanager.dto.UpdateTaskRequestDTO;
 import io.github.gabrielfagundeznievas.taskmanager.entity.Task;
 import io.github.gabrielfagundeznievas.taskmanager.exception.ResourceNotFoundException;
+import io.github.gabrielfagundeznievas.taskmanager.mapper.TaskMapper;
 import io.github.gabrielfagundeznievas.taskmanager.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,11 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     public List<Task> getAllTasks() {
@@ -29,13 +33,9 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task updateTask(Long id, Task taskDetails) {
+    public Task updateTask(Long id, UpdateTaskRequestDTO taskDTO) {
         Task task = getTaskById(id);
-        
-        task.setTitle(taskDetails.getTitle());
-        task.setDescription(taskDetails.getDescription());
-        task.setCompleted(taskDetails.getCompleted());
-        
+        taskMapper.updateEntityFromDTO(task, taskDTO);
         return taskRepository.save(task);
     }
 
