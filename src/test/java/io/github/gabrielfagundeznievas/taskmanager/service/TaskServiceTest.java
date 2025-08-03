@@ -1,7 +1,9 @@
 package io.github.gabrielfagundeznievas.taskmanager.service;
 
+import io.github.gabrielfagundeznievas.taskmanager.dto.UpdateTaskRequestDTO;
 import io.github.gabrielfagundeznievas.taskmanager.entity.Task;
 import io.github.gabrielfagundeznievas.taskmanager.exception.ResourceNotFoundException;
+import io.github.gabrielfagundeznievas.taskmanager.mapper.TaskMapper;
 import io.github.gabrielfagundeznievas.taskmanager.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +26,9 @@ class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private TaskMapper taskMapper;
 
     @InjectMocks
     private TaskService taskService;
@@ -90,30 +95,35 @@ class TaskServiceTest {
     void updateTask_WhenTaskExists_ShouldUpdateAndReturnTask() {
         Long taskId = 1L;
         Task existingTask = new Task(taskId, "Old Title", "Old Description", false, LocalDateTime.now());
-        Task taskDetails = new Task(null, "Updated Title", "Updated Description", true, null);
+        UpdateTaskRequestDTO taskDTO = new UpdateTaskRequestDTO();
+        taskDTO.setTitle("Updated Title");
+        taskDTO.setDescription("Updated Description");
+        taskDTO.setCompleted(true);
         Task updatedTask = new Task(taskId, "Updated Title", "Updated Description", true, existingTask.getCreatedAt());
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
         when(taskRepository.save(any(Task.class))).thenReturn(updatedTask);
+        doNothing().when(taskMapper).updateEntityFromDTO(existingTask, taskDTO);
 
-        Task actualTask = taskService.updateTask(taskId, taskDetails);
+        Task actualTask = taskService.updateTask(taskId, taskDTO);
 
         assertThat(actualTask.getId()).isEqualTo(taskId);
-        assertThat(actualTask.getTitle()).isEqualTo("Updated Title");
-        assertThat(actualTask.getDescription()).isEqualTo("Updated Description");
-        assertThat(actualTask.getCompleted()).isTrue();
         verify(taskRepository).findById(taskId);
+        verify(taskMapper).updateEntityFromDTO(existingTask, taskDTO);
         verify(taskRepository).save(existingTask);
     }
 
     @Test
     void updateTask_WhenTaskDoesNotExist_ShouldThrowResourceNotFoundException() {
         Long taskId = 999L;
-        Task taskDetails = new Task(null, "Updated Title", "Updated Description", true, null);
+        UpdateTaskRequestDTO taskDTO = new UpdateTaskRequestDTO();
+        taskDTO.setTitle("Updated Title");
+        taskDTO.setDescription("Updated Description");
+        taskDTO.setCompleted(true);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> taskService.updateTask(taskId, taskDetails))
+        assertThatThrownBy(() -> taskService.updateTask(taskId, taskDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Task not found with id: " + taskId);
 
